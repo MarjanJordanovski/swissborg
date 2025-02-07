@@ -1,0 +1,19 @@
+# argocd-config/argocd-oidc-application.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-oidc
+  namespace: argo
+spec:
+  project: default
+  source:
+    repoURL: "https://github.com/MarjanJordanovski/swissborg.git"
+    targetRevision: "main"
+    path: "argocd-config/oidc"
+  destination:
+    server: "https://kubernetes.default.svc"
+    namespace: argo
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

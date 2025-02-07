@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: keycloak
+  namespace: argo
+spec:
+  project: default
+  sources:
+    - repoURL: "https://charts.bitnami.com/bitnami"
+      chart: "keycloak"
+      targetRevision: "24.4.8"
+      helm:
+        releaseName: "keycloak"
+        # Minimal overrides:
+        values: |
+          auth:
+            adminUser: "admin"
+            adminPassword: "swissborg"
+          global:
+            defaultStorageClass: "gp2"
+          extraVolumes:
+          - name: realm-config
+            configMap:
+              name: keycloak-realm-config
+          extraVolumeMounts:
+            - name: realm-config
+              mountPath: "/tmp/realm"
+              readOnly: true
+    - repoURL: "https://github.com/MarjanJordanovski/swissborg.git"
+      targetRevision: "main"
+      path: "keycloak/realm-config"
+  destination:
+    namespace: identity
+    server: "https://kubernetes.default.svc"
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

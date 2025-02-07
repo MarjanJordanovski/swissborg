@@ -1,0 +1,14 @@
+# argocd-config/oidc/argocd-cm.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argo
+data:
+  url: "https://EXTERNAL_IP/argocd"
+  oidc.config: |
+    name: keycloak
+    issuer: https://EXTERNAL_IP/keycloak/realms/argorealm
+    clientID: argocd
+    clientSecret: $oidc.keycloak.clientSecret
+    requestedScopes: ["openid", "profile", "email"]
